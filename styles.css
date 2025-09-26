@@ -25,7 +25,7 @@ figure,
 blockquote,
 dl,
 dd {
-    margin-block-end: 0;
+    margin: 0;
 }
 
 /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
@@ -93,4 +93,34 @@ textarea:not([rows]) {
 
 /*End CSS Reset*/
 
-@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap");
+:root {
+    --pokedex-red: #dc2626;
+    --text-primary: #2a2a2a;
+    --background: #f9f9f9;
+}
+
+body {
+    font-family: "Orbitron", monospace;
+    background-color: var(--background);
+    color: var(--text-primary);
+    margin: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    background-color: var(--pokedex-red);
+    color: #ffffff;
+    padding: 1rem;
+    text-align: center;
+    border-radius: 8px;
+    border: 3px solid var(--text-primary);
+    width: 100%;
+}
+
+.header h1 {
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
