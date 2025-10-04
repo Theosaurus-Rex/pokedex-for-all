@@ -20,4 +20,11 @@ async function fetchPokemon(id) {
   return pokemon;
 }
 
-fetchPokemon(1);
+async function fetchPokemonList() {
+  const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+  const pokemonList = await response.json();
+  console.log(pokemonList.results);
+  return pokemonList.results;
+}
+
+fetchPokemonList();
