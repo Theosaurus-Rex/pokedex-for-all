@@ -4,6 +4,8 @@ const POKEMON_PER_PAGE = 20;
 let currentPage = 1;
 let totalPages = 1;
 let allPokemonList = [];
+let allPokemonNames = [];
+let isSearchActive = false;
 
 async function fetchPokemon(id) {
   // Check if we already cached the given Pokemon
@@ -31,6 +33,22 @@ async function fetchPokemonList(offset = 0, limit = 20) {
   };
 }
 
+// Fetch all Pokemon names for searching
+async function fetchAllPokemonNames() {
+  // Return cached names if already fetched
+  if (allPokemonNames.length > 0) {
+    return allPokemonNames;
+  }
+
+  const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+  const data = await response.json();
+  allPokemonNames = data.results.map((pokemon, index) => ({
+    name: pokemon.name,
+    id: index + 1,
+    url: pokemon.url,
+  }));
+  return allPokemonNames;
+}
 // Extract Pokemon ID from URL
 function getPokemonIdFromUrl(url) {
   const segments = url.split("/");
@@ -141,7 +159,56 @@ document.addEventListener("DOMContentLoaded", () => {
   searchInput.addEventListener("input", handleSearch);
 });
 
-function handleSearch(event) {
+async function handleSearch(event) {
   const searchTerm = event.target.value.toLowerCase().trim();
-  console.log("Searching for:", searchTerm);
+  if (searchTerm === "") {
+    // Return normal pagination when search is cleared
+    isSearchActive = false;
+    await renderCurrentPage();
+    updatePaginationControls();
+    return;
+  }
+
+  isSearchActive = true;
+  await performSearch(searchTerm);
+}
+
+async function performSearch(searchTerm) {
+  const loadingElement = document.getElementById("loading");
+  const pokemonListContainer = document.getElementById("pokemon-list");
+
+  loadingElement.style.display = "block";
+  pokemonListContainer.innerHTML = "";
+
+  try {
+    // Get all Pokemon names if not already cached
+    const allNames = await fetchAllPokemonNames();
+
+    // Filter Pokemon that match the search term
+    const matchingPokemon = allNames.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(searchTerm),
+    );
+
+    loadingElement.style.display = "none";
+
+    if (matchingPokemon.length === 0) {
+      pokemonListContainer.innerHTML =
+        '<p class="no-results">No Pokémon found matching your search.</p>';
+      return;
+    }
+
+    // Fetch and display matching Pokemon
+    const pokemonPromises = matchingPokemon.map((pokemon) =>
+      fetchPokemon(pokemon.id),
+    );
+    const pokemonData = await Promise.all(pokemonPromises);
+
+    pokemonData.forEach((pokemon) => {
+      const card = createPokemonCard(pokemon);
+      pokemonListContainer.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Error performing search:", error);
+    loadingElement.textContent = "Error performing search. Please try again.";
+  }
 }
