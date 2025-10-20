@@ -134,4 +134,14 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("prev-btn")
     .addEventListener("click", goToPreviousPage);
   document.getElementById("next-btn").addEventListener("click", goToNextPage);
+
+  // Event listener for search input
+  const searchInput = document.getElementById("pokemon-search");
+  // Using input event rather than change will fire every time the user types a character
+  searchInput.addEventListener("input", handleSearch);
 });
+
+function handleSearch(event) {
+  const searchTerm = event.target.value.toLowerCase().trim();
+  console.log("Searching for:", searchTerm);
+}
