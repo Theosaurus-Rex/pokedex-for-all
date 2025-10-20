@@ -183,3 +183,33 @@ body {
     flex-wrap: wrap;
     margin-top: 0.5rem;
 }
+
+.search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 1.5rem 0;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 3px solid var(--border-color);
+    border-radius: 8px;
+    background-color: white;
+    color: var(--text-primary);
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--pokedex-red);
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}
+
+.search-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
