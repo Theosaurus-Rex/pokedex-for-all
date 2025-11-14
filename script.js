@@ -18,7 +18,7 @@ function router() {
     showListView();
   } else if (hash.startsWith("#/pokemon/")) {
     // Pull out numeric Pokemon ID from URL
-    const pokemonID = hash.split("/")[2];
+    const pokemonId = hash.split("/")[2];
     showDetailView(pokemonId);
   } else {
     // Invalid route fallback - redirect to home
@@ -84,6 +84,14 @@ function createPokemonCard(pokemon) {
     <p class="pokemon-id">#${pokemon.id.toString().padStart(3, "0")}</p>
   `;
   return card;
+}
+
+function showListView() {
+  console.log("Showing list view");
+}
+
+function showDetailView(pokemonId) {
+  console.log("Showing detail view for Pokemon ID: ", pokemonId);
 }
 
 // Initialise pagination and render first page of pokemon
