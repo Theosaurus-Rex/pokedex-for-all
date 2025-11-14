@@ -166,6 +166,12 @@ async function renderCurrentPage() {
 document.addEventListener("DOMContentLoaded", () => {
   initializePagination();
 
+  // Listen for hash changes in the route (e.g. user clicks back/forward, or a link)
+  window.addEventListener("hashchange", router);
+
+  // Run router on initial page load
+  window.addEventListener("DOMContentLoaded", router);
+
   // Event listeners for pagination buttons
   document
     .getElementById("prev-btn")
