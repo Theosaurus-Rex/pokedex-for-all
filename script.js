@@ -87,11 +87,21 @@ function createPokemonCard(pokemon) {
 }
 
 function showListView() {
-  console.log("Showing list view");
+  document.getElementById("list-view").style.display = "flex";
+  document.getElementById("detail-view").style.display = "none";
 }
 
 function showDetailView(pokemonId) {
-  console.log("Showing detail view for Pokemon ID: ", pokemonId);
+  document.getElementById("list-view").style.display = "none";
+  document.getElementById("detail-view").style.display = "block";
+
+  document.getElementById("detail-view").innerHTML = `
+        <div style="padding: 2rem; text-align: center;">
+          <h2>Pokemon Detail Page</h2>
+          <p>Loading Pokemon #${pokemonId}...</p>
+          <button onclick="window.location.hash = '#/'">← Back to List</button>
+        </div>
+      `;
 }
 
 // Initialise pagination and render first page of pokemon
