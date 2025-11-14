@@ -7,6 +7,25 @@ let allPokemonList = [];
 let allPokemonNames = [];
 let isSearchActive = false;
 
+// Determine which page to show based on the URL hash
+// NOTE: We're using hash-based routing for now due to not using a server
+// This is fair game for refactoring if we decide to convert this app to using a server later
+function router() {
+  const hash = window.location.hash;
+
+  if (hash === "" || hash === "#/" || hash === "#") {
+    // Return index view when no pokemon is appended to the URL
+    showListView();
+  } else if (hash.startsWith("#/pokemon/")) {
+    // Pull out numeric Pokemon ID from URL
+    const pokemonID = hash.split("/")[2];
+    showDetailView(pokemonId);
+  } else {
+    // Invalid route fallback - redirect to home
+    window.location.hash = "#/";
+  }
+}
+
 async function fetchPokemon(id) {
   // Check if we already cached the given Pokemon
   if (pokemonCache[id]) {
