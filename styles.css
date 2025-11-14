@@ -157,6 +157,9 @@ body {
     transition:
         transform 0.2s,
         box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 .pokemon-card:hover {
