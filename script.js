@@ -92,11 +92,14 @@ function createPokemonCard(pokemon) {
 function showListView() {
   document.getElementById("list-view").style.display = "flex";
   document.getElementById("detail-view").style.display = "none";
+  window.scrollTo(0, 0);
 }
 
 async function showDetailView(pokemonId) {
   document.getElementById("list-view").style.display = "none";
   document.getElementById("detail-view").style.display = "block";
+
+  window.scrollTo(0, 0);
 
   document.getElementById("detail-view").innerHTML = `
     <div style="padding: 2rem; text-align: center;">
