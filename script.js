@@ -118,13 +118,25 @@ async function showDetailView(pokemonId) {
     const pokemon = await fetchPokemon(pokemonId);
     renderPokemonDetail(pokemon);
   } catch (error) {
+    console.error("Error fetching Pokemon:", error);
+
+    // Determine error type for better messaging
+    let errorMessage = "Could not load Pokemon data.";
+
+    if (error.message.includes("404")) {
+      errorMessage = `Pokemon #${pokemonId} does not exist.`;
+    } else if (!navigator.onLine) {
+      errorMessage = "You appear to be offline. Please check your connection.";
+    }
+
     document.getElementById("detail-view").innerHTML = `
-            <div style="padding: 2rem; text-align: center;">
-              <h2>Oops! Pokemon not found</h2>
-              <p>Could not load Pokemon #${pokemonId}</p>
-              <button onclick="window.location.hash = '#/'">← Back to List</button>
-            </div>
-          `;
+          <div class="detail-container" style="text-align: center;">
+            <h2>Oops!</h2>
+            <p>${errorMessage}</p>
+            <button class="back-button" onclick="window.location.hash = '#/'">←
+    Back to List</button>
+          </div>
+        `;
   }
 }
 
