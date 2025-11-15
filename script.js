@@ -14,14 +14,20 @@ function router() {
   const hash = window.location.hash;
 
   if (hash === "" || hash === "#/" || hash === "#") {
-    // Return index view when no pokemon is appended to the URL
     showListView();
   } else if (hash.startsWith("#/pokemon/")) {
     // Pull out numeric Pokemon ID from URL
     const pokemonId = hash.split("/")[2];
-    showDetailView(pokemonId);
+    // Number is in Gen 1-9 range
+    if (isNaN(pokemonId) || pokemonId < 1 || pokemonId > 1025) {
+      // Invalid ID - redirect to home
+      console.warn(`Invalid Pokemon ID: ${pokemonId}`);
+      window.location.hash = "#/";
+    } else {
+      showDetailView(pokemonId);
+    }
   } else {
-    // Invalid route fallback - redirect to home
+    // Invalid route - redirect to home
     window.location.hash = "#/";
   }
 }
