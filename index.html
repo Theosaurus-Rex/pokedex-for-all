@@ -14,26 +14,34 @@
         />
     </head>
     <body>
-        <div class="header">
-            <h1>Pokédex</h1>
-            <p>Digital Encyclopedia</p>
+        <!-- List View: Everything for the home page -->
+        <div id="list-view">
+            <div class="header">
+                <h1>Pokédex</h1>
+                <p>Digital Encyclopedia</p>
+            </div>
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="pokemon-search"
+                    placeholder="Search Pokémon by name..."
+                    class="search-input"
+                />
+            </div>
+            <div id="loading" class="loading">Loading Pokémon...</div>
+            <div id="pokemon-list" class="pokemon-grid"></div>
+            <div id="pagination" class="pagination">
+                <button id="prev-btn" class="pagination-btn" disabled>
+                    Previous
+                </button>
+                <span id="page-info" class="page-info">Page 1 of 1</span>
+                <button id="next-btn" class="pagination-btn">Next</button>
+            </div>
         </div>
-        <div class="search-container">
-            <input
-                type="text"
-                id="pokemon-search"
-                placeholder="Search Pokémon by name..."
-                class="search-input"
-            />
-        </div>
-        <div id="loading" class="loading">Loading Pokémon...</div>
-        <div id="pokemon-list" class="pokemon-grid"></div>
-        <div id="pagination" class="pagination">
-            <button id="prev-btn" class="pagination-btn" disabled>
-                Previous
-            </button>
-            <span id="page-info" class="page-info">Page 1 of 1</span>
-            <button id="next-btn" class="pagination-btn">Next</button>
+
+        <!-- Detail View: Will contain individual Pokemon details -->
+        <div id="detail-view" style="display: none">
+            <!-- TODO: Populate with details -->
         </div>
     </body>
 </html>
