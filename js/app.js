@@ -5,6 +5,7 @@ import {
   goToPreviousPage,
   goToNextPage,
   handleSearch,
+  handleTypeFilter,
 } from "./views/ListView.js";
 
 // Initialise the app when the page loads
@@ -27,4 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("pokemon-search");
   // Using input event rather than change will fire every time the user types a character
   searchInput.addEventListener("input", handleSearch);
+
+  // Event listener for type filter
+  const typeFilter = document.getElementById("type-filter");
+  typeFilter.addEventListener("change", handleTypeFilter);
 });

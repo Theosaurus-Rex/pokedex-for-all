@@ -14,6 +14,10 @@ import {
   setTotalPages,
   setIsSearchActive,
   isSearchActive,
+  selectedType,
+  setSelectedType,
+  setIsTypeFilterActive,
+  isTypeFilterActive,
 } from "../state.js";
 
 export function showListView() {
@@ -43,6 +47,15 @@ export function updatePaginationControls() {
   const nextBtn = document.getElementById("next-btn");
   const pageInfo = document.getElementById("page-info");
 
+  // Disable pagination when search or type filter is active
+  if (isSearchActive || isTypeFilterActive) {
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    pageInfo.textContent = "Showing filtered results";
+    return;
+  }
+
+  // Normal pagination controls
   prevBtn.disabled = currentPage === 1;
   nextBtn.disabled = currentPage === totalPages;
   pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
@@ -101,16 +114,31 @@ export async function renderCurrentPage() {
 
 export async function handleSearch(event) {
   const searchTerm = event.target.value.toLowerCase().trim();
+
   if (searchTerm === "") {
-    // Return normal pagination when search is cleared
+    // Return normal pagination or type filter when search is cleared
     setIsSearchActive(false);
-    await renderCurrentPage();
-    updatePaginationControls();
+
+    // If type filter is active, re-apply it, otherwise show normal pagination
+    if (isTypeFilterActive) {
+      await performTypeFilter(selectedType);
+    } else {
+      await renderCurrentPage();
+      updatePaginationControls();
+    }
     return;
   }
 
   setIsSearchActive(true);
-  await performSearch(searchTerm);
+
+  // If type filter is active, search within filtered results
+  if (isTypeFilterActive) {
+    await performCombinedFilter(selectedType, searchTerm);
+  } else {
+    await performSearch(searchTerm);
+  }
+
+  updatePaginationControls();
 }
 
 async function performSearch(searchTerm) {
@@ -150,5 +178,129 @@ async function performSearch(searchTerm) {
   } catch (error) {
     console.error("Error performing search:", error);
     loadingElement.textContent = "Error performing search. Please try again.";
+  }
+}
+
+export async function handleTypeFilter(event) {
+  const typeValue = event.target.value.toLowerCase().trim();
+
+  if (typeValue === "") {
+    // Return to normal pagination when filter is cleared
+    setIsTypeFilterActive(false);
+    setSelectedType("");
+    // If search is active, re-run the search, otherwise show normal pagination
+    if (isSearchActive) {
+      const searchInput = document.getElementById("pokemon-search");
+      await performSearch(searchInput.value.toLowerCase().trim());
+    } else {
+      await renderCurrentPage();
+      updatePaginationControls();
+    }
+    return;
+  }
+
+  setIsTypeFilterActive(true);
+  setSelectedType(typeValue);
+
+  // If search is active, filter by both type and search term
+  if (isSearchActive) {
+    const searchInput = document.getElementById("pokemon-search");
+    await performCombinedFilter(
+      typeValue,
+      searchInput.value.toLowerCase().trim(),
+    );
+  } else {
+    await performTypeFilter(typeValue);
+  }
+
+  updatePaginationControls();
+}
+
+async function performTypeFilter(type) {
+  const loadingElement = document.getElementById("loading");
+  const pokemonListContainer = document.getElementById("pokemon-list");
+
+  loadingElement.style.display = "block";
+  pokemonListContainer.innerHTML = "";
+
+  try {
+    // Fetch Pokemon of the selected type from PokeAPI
+    const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+    const typeData = await response.json();
+
+    // Filter to only include Gen 1 Pokemon (IDs 1-151)
+    const gen1Pokemon = typeData.pokemon
+      .map((p) => {
+        const id = getPokemonIdFromUrl(p.pokemon.url);
+        return { ...p.pokemon, id };
+      })
+      .filter((p) => p.id >= 1 && p.id <= 151);
+
+    loadingElement.style.display = "none";
+
+    if (gen1Pokemon.length === 0) {
+      pokemonListContainer.innerHTML =
+        '<p class="no-results">No Generation 1 Pokémon found with this type.</p>';
+      return;
+    }
+
+    // Fetch and display matching Pokemon
+    const pokemonPromises = gen1Pokemon.map((pokemon) =>
+      fetchPokemon(pokemon.id),
+    );
+    const pokemonData = await Promise.all(pokemonPromises);
+
+    pokemonData.forEach((pokemon) => {
+      const card = createPokemonCard(pokemon);
+      pokemonListContainer.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Error filtering by type:", error);
+    loadingElement.textContent = "Error filtering Pokémon. Please try again.";
+  }
+}
+
+async function performCombinedFilter(type, searchTerm) {
+  const loadingElement = document.getElementById("loading");
+  const pokemonListContainer = document.getElementById("pokemon-list");
+
+  loadingElement.style.display = "block";
+  pokemonListContainer.innerHTML = "";
+
+  try {
+    // Fetch Pokemon of the selected type from PokeAPI
+    const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+    const typeData = await response.json();
+
+    // Filter to only include Gen 1 Pokemon (IDs 1-151) that match search term
+    const gen1Pokemon = typeData.pokemon
+      .map((p) => {
+        const id = getPokemonIdFromUrl(p.pokemon.url);
+        return { ...p.pokemon, id };
+      })
+      .filter((p) => p.id >= 1 && p.id <= 151)
+      .filter((p) => p.name.toLowerCase().includes(searchTerm));
+
+    loadingElement.style.display = "none";
+
+    if (gen1Pokemon.length === 0) {
+      pokemonListContainer.innerHTML =
+        '<p class="no-results">No Pokémon found matching your search and type filter.</p>';
+      return;
+    }
+
+    // Fetch and display matching Pokemon
+    const pokemonPromises = gen1Pokemon.map((pokemon) =>
+      fetchPokemon(pokemon.id),
+    );
+    const pokemonData = await Promise.all(pokemonPromises);
+
+    pokemonData.forEach((pokemon) => {
+      const card = createPokemonCard(pokemon);
+      pokemonListContainer.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Error filtering:", error);
+    loadingElement.textContent = "Error filtering Pokémon. Please try again.";
   }
 }

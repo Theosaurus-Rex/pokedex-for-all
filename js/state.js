@@ -7,6 +7,8 @@ export let totalPages = 1;
 export let allPokemonList = [];
 export let allPokemonNames = [];
 export let isSearchActive = false;
+export let selectedType = "";
+export let isTypeFilterActive = false;
 
 // State updaters
 export function setCurrentPage(page) {
@@ -23,4 +25,12 @@ export function setIsSearchActive(active) {
 
 export function setAllPokemonNames(names) {
   allPokemonNames = names;
+}
+
+export function setSelectedType(type) {
+  selectedType = type;
+}
+
+export function setIsTypeFilterActive(active) {
+  isTypeFilterActive = active;
 }
